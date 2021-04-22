@@ -9,6 +9,8 @@ import ExpandCollapse from 'monday-ui-react-core/dist/ExpandCollapse'
 //import ExpandCollapseComponent from 'monday-ui-react-core/src/components/ExpandCollapse/ExpandCollapse.jsx'
 import Icon from 'monday-ui-react-core/dist/Icon'
 import Robot from 'monday-ui-react-core'
+import BoardMembers from './BoardMembers'
+
 const monday = mondaySdk();
 
 const obj = [
@@ -49,11 +51,20 @@ class App extends React.Component {
   componentDidMount() {
     // TODO: set up event listeners
     monday.listen("context", res => {
-      const context = res.data;
-      console.log("context!", context)
-      const userId = context.userId ? context.user.id : false;
-      this.setState ({userId, context})
+      this.setState({context: res.data});
+      console.log(res.data);
+      monday.api(`query ($boardIds: [Int]) { boards (ids:$boardIds) { name items(limit:1) { name column_values { title text } } } }`,
+        { variables: {boardId: this.state.context.boardIds} }
+      )
+      .then(res => {
+        this.setState({boardData: res.data});
+      });
     })
+    monday.listen("itemIds", (res) => {
+      console.log(res.data );
+      this.setState({boardData: res.data});
+      // [12345, 12346, 12347]
+    });
   }
 
   render() {
@@ -68,7 +79,7 @@ class App extends React.Component {
      text={this.state.settings.attentionBoxMessage || "You should be nfo that appears here using the fields you've set up previously in the View settings :) "}
      type={this.state.settings.attentionBoxType || "success"}
 />
-{JSON.stringify(this.state.userId)}
+{JSON.stringify(this.state.boardData, null, 2)}
     
   </div>
       
