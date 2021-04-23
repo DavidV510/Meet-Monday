@@ -5,10 +5,12 @@ import "monday-ui-react-core/dist/main.css"
 //Explore more Monday React Components here: https://style.monday.com/
 import AttentionBox from "monday-ui-react-core/dist/AttentionBox.js"
 import number from 'monday-ui-react-core'
-import ExpandCollapse from 'monday-ui-react-core/dist/ExpandCollapse'
+// import ExpandCollapse from 'monday-ui-react-core/dist/ExpandCollapse'
 //import ExpandCollapseComponent from 'monday-ui-react-core/src/components/ExpandCollapse/ExpandCollapse.jsx'
 import Icon from 'monday-ui-react-core/dist/Icon'
 import Robot from 'monday-ui-react-core'
+import DatePick from './components/DatePick/DatePick';
+
 const monday = mondaySdk();
 
 const obj = [
@@ -63,19 +65,16 @@ class App extends React.Component {
         className="App"
         style={{ background: this.state.settings.background }}
       >
-     <AttentionBox 
-     title = {this.state.settings.attentionBoxTitle || "Hello monday.apps"}
-     text={this.state.settings.attentionBoxMessage || "You should be nfo that appears here using the fields you've set up previously in the View settings :) "}
-     type={this.state.settings.attentionBoxType || "success"}
-/>
-{JSON.stringify(this.state.userId)}
-    
-  </div>
-      
-      
-      
+        <AttentionBox 
+            title = {this.state.settings.attentionBoxTitle || "Hello monday.apps"}
+            text={this.state.settings.attentionBoxMessage || "You should be nfo that appears here using the fields you've set up previously in the View settings :) "}
+            type={this.state.settings.attentionBoxType || "success"}
+        />
+        {JSON.stringify(this.state.userId)}
 
-      
+        <DatePick></DatePick>
+    
+      </div>      
     );
   }
 }
