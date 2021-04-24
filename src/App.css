@@ -6,7 +6,29 @@ body {
 .App {
   height: 100vh;
   width: 100vw;
-  display: flex;
+  padding: 10%;
   align-items: center;
   justify-content: center;
+}
+
+.DropDowns{
+  width: 75%;
+  display: flex;
+}
+
+.DropDowns .InputDrop{
+  width: 50%;
+}
+
+.DropDowns .MuiFormControl-root{
+  display: block;
+}
+
+.DropDowns .MuiAutocomplete-root{
+  width: 50%;
+  margin: 10px;
+}
+
+.TeamSubList{
+  display: block;
 }
