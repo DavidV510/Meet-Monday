@@ -41,30 +41,36 @@ class App extends React.Component {
       settings: {},
       name: "",
       teamSubscribers: {},
+      teamMembers: [],
+      taskName: "",
     };
   }
 
   componentDidMount() {
-    // TODO: set up event listeners
-    debugger;
     monday.listen("context", (res) => {
       this.setState({ context: res.data });
-      console.log(res.data);
+
+      if (res.data.itemIds) {
+        const boardId = res.data.boardIds[0];
+        const taskId = res.data.itemIds[0];
+        // get task info
+        monday.api(`query {items (ids: [${taskId}]) {name}}`).then((res) => {
+          this.setState({ taskName: res.data.items[0].name });
+        });
+
+        // get board members
+        monday.api(` query {boards (ids: ${boardId}) {subscribers {email name} }}`)
+          .then((res) => {
+            debugger;
+            this.setState({ teamMembers: res.data.boards[0].subscribers });
+          });
+      }
     });
 
     ///////////////
-    // monday.api(
-    //     `query ($boardIds: [Int]) { boards (ids:$boardIds) { name items(limit:1) { name column_values { title text } } } }`,
-    //     { variables: { boardId: this.state.context.boardIds } }
-    //   )
-    //   .then((res) => {
-    //     this.setState({ boardData: res.data });
-    //   });
-
-      
-    ///////////////
     monday.listen("itemIds", (res) => {
       console.log(res.data);
+      debugger
       this.setState({ boardData: res.data });
       // [12345, 12346, 12347]
     });
@@ -73,6 +79,7 @@ class App extends React.Component {
   render() {
     let handleCallback = (teamSubscriberFromChild) => {
       ArrayTeam.push(teamSubscriberFromChild);
+      debugger
       this.setState({ teamSubscribers: ArrayTeam });
     };
     return (
@@ -80,17 +87,16 @@ class App extends React.Component {
         className="App"
         style={{ background: this.state.settings.background }}
       >
-        {JSON.stringify(this.state.boardData, null, 2)}
 
         <div className="DropDowns">
           <BoardMembersComponent
             className="InputDrop"
             parentCallback={handleCallback}
+            members={this.state.teamMembers}
           ></BoardMembersComponent>
-          <Locations className="InputDrop"></Locations>
+          {/* <Locations className="InputDrop"></Locations> */}
         </div>
 
-        {console.log("App members: " + this.state.teamSubscribers)}
         <TeamSubList
           className="TeamSubList"
           parentTeamSubscribers={this.state.teamSubscribers}
