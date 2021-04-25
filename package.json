@@ -5,7 +5,7 @@
   "scripts": {
     "start": "npm run stop && concurrently \"npm run server\" \"npm run expose\"",
     "build": "react-scripts build",
-    "expose": "ngrok http 8301",
+    "expose": "ngrok http 3000",
     "server": "react-scripts start",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
@@ -24,7 +24,7 @@
     "monday-ui-react-core": "0.0.48",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
-    "react-scripts": "1.1.4",
+    "react-scripts": "3.2.0",
     "storybook-addon-knobs-color-options": "^6.2.0-rc.2"
   },
   "eslintConfig": {
@@ -34,6 +34,7 @@
     "production": [
       ">0.2%",
       "not dead",
+      "not ie <= 11",
       "not op_mini all"
     ],
     "development": [

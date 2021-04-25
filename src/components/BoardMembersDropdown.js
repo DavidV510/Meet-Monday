@@ -5,7 +5,6 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 
 
 const BoardMembersComponent = ({parentCallback}) => { 
-// Top 100 films as rated by IMDb users. http://www.imdb.com/chart/top\
   
 let state = {
   BoardMembers:[]
