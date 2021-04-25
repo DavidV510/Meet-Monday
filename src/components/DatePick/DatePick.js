@@ -1,23 +1,33 @@
-import React, { useState } from 'react';
-import TextField from '@material-ui/core/TextField';
+import React from 'react';
 import AdapterDateFns from '@material-ui/lab/AdapterDateFns';
 import LocalizationProvider from '@material-ui/lab/LocalizationProvider';
-import DateTimePicker from '@material-ui/lab/DateTimePicker';
+import Box from '@material-ui/core/Box';
+import CalendarPicker from '@material-ui/lab/CalendarPicker';
 
-function DatePick() {
-  const [value, setValue] = useState(new Date());
+class DatePick extends React.Component {
+  constructor(props) {
+    super(props);
+  }
 
-  return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <DateTimePicker
-        renderInput={(props) => <TextField {...props} />}
-        label='DateTimePicker'
-        value={value}
-        onChange={(newValue) => {
-          setValue(newValue);
-        }}
-      />
-    </LocalizationProvider>
-  );
+  render() {
+    return (
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'start',
+            flexDirection: 'row',
+            '& > div': { margin: 2 },
+          }}
+        >
+          <CalendarPicker
+            allowKeyboardControl={false}
+            date={this.props.date}
+            onChange={(newDate) => this.props.setDate(newDate)}
+          />
+        </Box>
+      </LocalizationProvider>
+    );
+  }
 }
 export default DatePick;
