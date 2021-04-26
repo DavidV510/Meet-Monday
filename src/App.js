@@ -1,83 +1,80 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import mondaySdk from "monday-sdk-js";
-import "monday-ui-react-core/dist/main.css"
-//Explore more Monday React Components here: https://style.monday.com/
-import AttentionBox from "monday-ui-react-core/dist/AttentionBox.js"
-import number from 'monday-ui-react-core'
-import ExpandCollapse from 'monday-ui-react-core/dist/ExpandCollapse'
-//import ExpandCollapseComponent from 'monday-ui-react-core/src/components/ExpandCollapse/ExpandCollapse.jsx'
-import Icon from 'monday-ui-react-core/dist/Icon'
-import Robot from 'monday-ui-react-core'
+import "monday-ui-react-core/dist/main.css";
+import BoardMembersComponent from "./components/BoardMembersDropdown";
+import Locations from "./components/LocationDropdown";
+import TeamSubList from "./components/TeamSubList";
+import DatePick from "./components/DatePick";
+
 const monday = mondaySdk();
 
-const obj = [
-  // Board view context
-  {
-    "boardViewId": 19324,
-    "boardIds": [3423243],
-    "mode": "fullScreen", // or "split"
-    "theme": "light"  // or "dark"
-  },
+function App() {
+  const [date, setDate] = useState(new Date());
+  const [settings, setSettings] = useState({});
+  const [taskName, setTaskName] = useState("");
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [selectedTeamMembers, setSelectedTeamMembers] = useState([]);
 
-  // Dashboard widget context
-  {
-    "widgetId": 54236,
-    "boardIds": [3423243, 943728],
-    "theme": "light"  // or "dark"
-  },
-
-  // Item view context 
-  {
-      "boardId" : 12345,
-      "itemId" : 123456
-  }
-]
-
-
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-
-    // Default state
-    this.state = {
-      settings: {},
-      name: "",
-    };
-  }
-
-  componentDidMount() {
-    // TODO: set up event listeners
-    monday.listen("context", res => {
+  useEffect(() => {
+    monday.listen("context", (res) => {
       const context = res.data;
-      console.log("context!", context)
-      const userId = context.userId ? context.user.id : false;
-      this.setState ({userId, context})
-    })
-  }
+      if (context.itemIds) {
+        const boardId = context.boardIds[0];
+        const taskId = context.itemIds[0];
+        // get and set task info
+        monday.api(`query {items (ids: [${taskId}]) {name}}`).then((res) => {
+          setTaskName(res.data.items[0].name);
+        });
+        // get and set board members
+        monday
+          .api(
+            ` query {boards (ids: ${boardId}) {subscribers {email name photo_original, photo_small} }}`
+          )
+          .then((res) => {
+            setTeamMembers(res.data.boards[0].subscribers);
+          });
+      }
+    });
+  }, []);
 
-  render() {
-    return (
-      
-      <div
-        className="App"
-        style={{ background: this.state.settings.background }}
-      >
-     <AttentionBox 
-     title = {this.state.settings.attentionBoxTitle || "Hello monday.apps"}
-     text={this.state.settings.attentionBoxMessage || "You should be nfo that appears here using the fields you've set up previously in the View settings :) "}
-     type={this.state.settings.attentionBoxType || "success"}
-/>
-{JSON.stringify(this.state.userId)}
-    
-  </div>
-      
-      
-      
+  let handleAddMember = (teamSubscriberFromChild) => {
+    const isFound = selectedTeamMembers.some((mem) => {
+      if (mem.name === teamSubscriberFromChild.name) return true;
+    });
+    if (isFound) return;
+    let arr = [...selectedTeamMembers];
+    arr.push(teamSubscriberFromChild);
+    setSelectedTeamMembers(arr);
+  };
 
-      
-    );
-  }
+    let handleRemoveMember = (teamSubscriberFromChild) => {
+      let arr = [...selectedTeamMembers];
+      arr.splice(teamSubscriberFromChild, 1);
+      setSelectedTeamMembers(arr);
+    };
+
+
+  return (
+    <div className="App" style={{ background: settings.background }}>
+      <DatePick date={date} setDate={(newDate) => setDate(newDate)}></DatePick>
+
+      <div className="DropDowns">
+        <BoardMembersComponent
+          className="InputDrop"
+          parentCallback={handleAddMember}
+          members={teamMembers}
+          selectedMembers={selectedTeamMembers}
+        ></BoardMembersComponent>
+        {/* <Locations className="InputDrop"></Locations> */}
+      </div>
+ 
+      <TeamSubList
+        className="TeamSubList"
+        parentCallback={handleRemoveMember}
+        parentTeamSubscribers={selectedTeamMembers}
+      ></TeamSubList>
+    </div>
+  );
 }
-
 export default App;
