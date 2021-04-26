@@ -12,9 +12,8 @@ const TeamSubList = ({ parentTeamSubscribers, parentCallback }) => {
         <div className="member" key={i}>
           <img className="pic" src={person.photo_small}></img>
           <div className="info">{person.name}</div>
-          <span className="remove" onClick={() => removeMember(i)}>
-            X
-          </span>
+          <img className="admin-icon" src={person.is_admin? '../../admin.svg': '../../no-admin.svg'} ></img>
+          <img className="x-icon" src='../../x-icon.svg' onClick={() => removeMember(i)}></img>
         </div>
       ))}
     </div>

@@ -1,4 +1,3 @@
-/* eslint-disable no-use-before-define */
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -6,10 +5,6 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 
 const BoardMembersComponent = ({parentCallback, members}) => { 
   
-let state = {
-  BoardMembers:[]
-}
-
 
   const onPickBoardMember = (BoardMemeber) => {
     if (!BoardMemeber){
