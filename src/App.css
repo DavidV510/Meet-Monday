@@ -31,4 +31,27 @@ body {
 
 .TeamSubList{
   display: block;
+  margin: 10px;
+  width: 250px;
+}
+.team-title {
+  margin: 10px 0;
+}
+.member {
+  display: flex;
+  height: 40px;
+  align-items: center;
+}
+.pic {
+  border-radius: 50%;
+  height: 30px;
+  width: 30px;
+  margin-right: 10px;
+}
+.info {
+  display: flex;
+  flex: 1;
+}
+.remove {
+  cursor: pointer;
 }

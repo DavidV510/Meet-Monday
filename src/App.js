@@ -1,109 +1,80 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import mondaySdk from "monday-sdk-js";
 import "monday-ui-react-core/dist/main.css";
 import BoardMembersComponent from "./components/BoardMembersDropdown";
 import Locations from "./components/LocationDropdown";
 import TeamSubList from "./components/TeamSubList";
+import DatePick from "./components/DatePick";
 
 const monday = mondaySdk();
 
-// const obj = [
-//   // Board view context
-//   {
-//     "boardViewId": 19324,
-//     "boardIds": [3423243],
-//     "mode": "fullScreen", // or "split"
-//     "theme": "light"  // or "dark"
-//   },
+function App() {
+  const [date, setDate] = useState(new Date());
+  const [settings, setSettings] = useState({});
+  const [taskName, setTaskName] = useState("");
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [selectedTeamMembers, setSelectedTeamMembers] = useState([]);
 
-//   // Dashboard widget context
-//   {
-//     "widgetId": 54236,
-//     "boardIds": [3423243, 943728],
-//     "theme": "light"  // or "dark"
-//   },
-
-//   // Item view context
-//   {
-//       "boardId" : 12345,
-//       "itemId" : 123456
-//   }
-// ]
-
-let ArrayTeam = [];
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-
-    // Default state
-    this.state = {
-      settings: {},
-      name: "",
-      teamSubscribers: {},
-      teamMembers: [],
-      taskName: "",
-    };
-  }
-
-  componentDidMount() {
+  useEffect(() => {
     monday.listen("context", (res) => {
-      this.setState({ context: res.data });
-
-      if (res.data.itemIds) {
-        const boardId = res.data.boardIds[0];
-        const taskId = res.data.itemIds[0];
-        // get task info
+      const context = res.data;
+      if (context.itemIds) {
+        const boardId = context.boardIds[0];
+        const taskId = context.itemIds[0];
+        // get and set task info
         monday.api(`query {items (ids: [${taskId}]) {name}}`).then((res) => {
-          this.setState({ taskName: res.data.items[0].name });
+          setTaskName(res.data.items[0].name);
         });
-
-        // get board members
-        monday.api(` query {boards (ids: ${boardId}) {subscribers {email name} }}`)
+        // get and set board members
+        monday
+          .api(
+            ` query {boards (ids: ${boardId}) {subscribers {email name photo_original, photo_small} }}`
+          )
           .then((res) => {
-            debugger;
-            this.setState({ teamMembers: res.data.boards[0].subscribers });
+            setTeamMembers(res.data.boards[0].subscribers);
           });
       }
     });
+  }, []);
 
-    ///////////////
-    monday.listen("itemIds", (res) => {
-      console.log(res.data);
-      debugger
-      this.setState({ boardData: res.data });
-      // [12345, 12346, 12347]
+  let handleAddMember = (teamSubscriberFromChild) => {
+    const isFound = selectedTeamMembers.some((mem) => {
+      if (mem.name === teamSubscriberFromChild.name) return true;
     });
-  }
+    if (isFound) return;
+    let arr = [...selectedTeamMembers];
+    arr.push(teamSubscriberFromChild);
+    setSelectedTeamMembers(arr);
+  };
 
-  render() {
-    let handleCallback = (teamSubscriberFromChild) => {
-      ArrayTeam.push(teamSubscriberFromChild);
-      debugger
-      this.setState({ teamSubscribers: ArrayTeam });
+    let handleRemoveMember = (teamSubscriberFromChild) => {
+      let arr = [...selectedTeamMembers];
+      arr.splice(teamSubscriberFromChild, 1);
+      setSelectedTeamMembers(arr);
     };
-    return (
-      <div
-        className="App"
-        style={{ background: this.state.settings.background }}
-      >
 
-        <div className="DropDowns">
-          <BoardMembersComponent
-            className="InputDrop"
-            parentCallback={handleCallback}
-            members={this.state.teamMembers}
-          ></BoardMembersComponent>
-          {/* <Locations className="InputDrop"></Locations> */}
-        </div>
 
-        <TeamSubList
-          className="TeamSubList"
-          parentTeamSubscribers={this.state.teamSubscribers}
-        ></TeamSubList>
+  return (
+    <div className="App" style={{ background: settings.background }}>
+      <DatePick date={date} setDate={(newDate) => setDate(newDate)}></DatePick>
+
+      <div className="DropDowns">
+        <BoardMembersComponent
+          className="InputDrop"
+          parentCallback={handleAddMember}
+          members={teamMembers}
+          selectedMembers={selectedTeamMembers}
+        ></BoardMembersComponent>
+        {/* <Locations className="InputDrop"></Locations> */}
       </div>
-    );
-  }
+ 
+      <TeamSubList
+        className="TeamSubList"
+        parentCallback={handleRemoveMember}
+        parentTeamSubscribers={selectedTeamMembers}
+      ></TeamSubList>
+    </div>
+  );
 }
-
 export default App;

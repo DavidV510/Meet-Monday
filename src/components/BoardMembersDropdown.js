@@ -4,27 +4,18 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 
-const BoardMembersComponent = ({parentCallback}) => { 
+const BoardMembersComponent = ({parentCallback, members}) => { 
   
 let state = {
   BoardMembers:[]
 }
-const BoardMembers = [
-    { title: 'The Shawshank Redemption', year: 1994 },
-    { title: 'The Godfather', year: 1972 },
-    { title: 'The Godfather: Part II', year: 1974 },
-    { title: 'The Dark Knight', year: 2008 },
-    { title: '12 Angry Men', year: 1957 },
-  ];
+
 
   const onPickBoardMember = (BoardMemeber) => {
     if (!BoardMemeber){
       return 
     }
-    state.BoardMembers.push(BoardMemeber)
-    console.log('Board Member: ' + BoardMemeber)
     parentCallback(BoardMemeber);
-    
   }
 
   return (
@@ -32,8 +23,8 @@ const BoardMembers = [
       onChange={(event, value) => {
        onPickBoardMember(value)
       }}
-      options={BoardMembers}
-      getOptionLabel={(option) => option.title}
+      options={members}
+      getOptionLabel={(option) => option.name}
       renderInput = {(params) => 
       <TextField {...params} 
       placeholder="Enter name or email" variant="outlined" />
