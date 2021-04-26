@@ -25,10 +25,12 @@
     "@testing-library/user-event": "^7.2.1",
     "babel-eslint": "10.0.3",
     "date-fns": "^2.21.1",
+    "moment": "^2.29.1",
     "monday-sdk-js": "^0.1.2",
     "monday-ui-react-core": "0.0.48",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
+    "react-moment": "^1.1.1",
     "react-scripts": "3.2.0",
     "storybook-addon-knobs-color-options": "^6.2.0-rc.2"
   },

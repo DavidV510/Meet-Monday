@@ -10,29 +10,40 @@ body {
   align-items: center;
   justify-content: center;
 }
-
-.DropDowns{
+.drop-header {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+  height: 40px;
+}
+.avatar {
+  height: 20px;
+  width: 20px;
+  margin-right: 10px;
+}
+.DropDowns {
   width: 75%;
   display: flex;
 }
 
-.DropDowns .InputDrop{
+.DropDowns .InputDrop {
   width: 50%;
 }
 
-.DropDowns .MuiFormControl-root{
+.DropDowns .MuiFormControl-root {
   display: block;
 }
 
-.DropDowns .MuiAutocomplete-root{
+.DropDowns .MuiAutocomplete-root {
   width: 50%;
   margin: 10px;
 }
 
-.TeamSubList{
+.TeamSubList {
   display: block;
   margin: 10px;
   width: 250px;
+  min-height: 150px;
 }
 .team-title {
   margin: 10px 0;
@@ -52,6 +63,29 @@ body {
   display: flex;
   flex: 1;
 }
-.remove {
+.admin-icon {
+  height: 20px;
+  margin-right: 5px;
+}
+.x-icon {
+  height: 20px;
   cursor: pointer;
+}
+
+.MuiPickerView-root {
+  height: 300px;
+  border: 1px solid grey;
+  border-radius: 10px;
+}
+
+.submit {
+  width: 177px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  color: #ffffff;
+  cursor: pointer;
+  background-color: #3C81F9;
 }
