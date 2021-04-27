@@ -3,12 +3,12 @@ import "./App.css";
 import mondaySdk from "monday-sdk-js";
 import "monday-ui-react-core/dist/main.css";
 import BoardMembersComponent from "./components/BoardMembersDropdown";
-import Locations from "./components/LocationDropdown";
+// import Locations from "./components/LocationDropdown";
 import TeamSubList from "./components/TeamSubList";
 import DatePick from "./components/DatePick";
-import Moment from 'react-moment';
-import moment from 'moment';
+import moment from "moment";
 
+DATE_FORMAT = "YYYYMMDDToHHMMSSZ/YYYYMMDDToHHMMSSZ";
 const monday = mondaySdk();
 
 function App() {
@@ -21,20 +21,21 @@ function App() {
   useEffect(() => {
     monday.listen("context", (res) => {
       const context = res.data;
-      if (context.itemIds) {
+
+      if (context.itemId) {
         const boardId = context.boardIds[0];
-        const taskId = context.itemIds[0];
+        const taskId = context.itemId;
+        const taksQuery = `query {items (ids: [${taskId}]) {name}}`;
+        const membersQuery = `query {boards (ids: ${boardId}) {subscribers {email, name, photo_original, photo_small, is_admin} }}`;
+
         // get and set task info
-        monday.api(`query {items (ids: [${taskId}]) {name}}`).then((res) => {
+        monday.api(taksQuery).then((res) => {
           setTaskName(res.data.items[0].name);
         });
         // get and set board members
-        monday.api(
-            ` query {boards (ids: ${boardId}) {subscribers {email, name, photo_original, photo_small, is_admin} }}`
-          )
-          .then((res) => {
-            setTeamMembers(res.data.boards[0].subscribers);
-          });
+        monday.api(membersQuery).then((res) => {
+          setTeamMembers(res.data.boards[0].subscribers);
+        });
       }
     });
   }, []);
@@ -56,26 +57,24 @@ function App() {
   };
 
   let openCalender = (taskName, date, selectedTeamMembers) => {
-
-    const formattedDate = moment(date).format('YYYYMMDDToHHMMSSZ/YYYYMMDDToHHMMSSZ')
-    let guestsStr = '';
-    selectedTeamMembers.forEach(member => {
-      guestsStr = guestsStr + member.email + ','
+    const formattedDate = moment(date).format(DATE_FORMAT);
+    let guestsStr = "";
+    selectedTeamMembers.forEach((member) => {
+      guestsStr = guestsStr + member.email + ",";
     });
-    console.log(document.URL);
-    window.open("https://calendar.google.com/calendar/r/eventedit?text="+taskName+"&dates="+formattedDate+"&add="+guestsStr)
+    const calenderRedirectURL = "https://calendar.google.com/calendar/r/eventedit?text="+taskName+"&dates="+formattedDate+"&add="+guestsStr
+    window.open(calenderRedirectURL);
   };
-
 
   return (
     <div className="App" style={{ background: settings.background }}>
       <DatePick date={date} setDate={(newDate) => setDate(newDate)}></DatePick>
 
       <div className="drop-header">
-          <img className="avatar" src="../avatar.svg"></img>
+        <img className="avatar" src="../avatar.svg"></img>
         <h4>Add Team Subscribers</h4>
       </div>
- 
+
       <div className="DropDowns">
         <BoardMembersComponent
           className="InputDrop"
@@ -92,8 +91,11 @@ function App() {
         parentTeamSubscribers={selectedTeamMembers}
       ></TeamSubList>
 
-      <div className="submit" onClick={() => openCalender(taskName, date, selectedTeamMembers)}>
-          Open Calender
+      <div
+        className="submit"
+        onClick={() => openCalender(taskName, date, selectedTeamMembers)}
+      >
+        Open Calender
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ body {
   padding: 10%;
   align-items: center;
   justify-content: center;
+  margin-bottom: 100px;
 }
 .drop-header {
   display: flex;
@@ -88,4 +89,6 @@ body {
   color: #ffffff;
   cursor: pointer;
   background-color: #3C81F9;
+  position: absolute;
+  right: 20px;
 }
