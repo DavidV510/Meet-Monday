@@ -8,7 +8,6 @@ import TeamSubList from "./components/TeamSubList";
 import DatePick from "./components/DatePick";
 import moment from "moment";
 
-DATE_FORMAT = "YYYYMMDDToHHMMSSZ/YYYYMMDDToHHMMSSZ";
 const monday = mondaySdk();
 
 function App() {
@@ -21,10 +20,9 @@ function App() {
   useEffect(() => {
     monday.listen("context", (res) => {
       const context = res.data;
-
-      if (context.itemId) {
+      if (context.itemId || context.itemIds) {
         const boardId = context.boardIds[0];
-        const taskId = context.itemId;
+        const taskId = context.itemId || context.itemIds[0];
         const taksQuery = `query {items (ids: [${taskId}]) {name}}`;
         const membersQuery = `query {boards (ids: ${boardId}) {subscribers {email, name, photo_original, photo_small, is_admin} }}`;
 
@@ -36,6 +34,7 @@ function App() {
         monday.api(membersQuery).then((res) => {
           setTeamMembers(res.data.boards[0].subscribers);
         });
+
       }
     });
   }, []);
@@ -57,7 +56,7 @@ function App() {
   };
 
   let openCalender = (taskName, date, selectedTeamMembers) => {
-    const formattedDate = moment(date).format(DATE_FORMAT);
+    const formattedDate = moment(date).format('YYYYMMDDToHHMMSSZ/YYYYMMDDToHHMMSSZ');
     let guestsStr = "";
     selectedTeamMembers.forEach((member) => {
       guestsStr = guestsStr + member.email + ",";
@@ -74,6 +73,7 @@ function App() {
         <img className="avatar" src="../avatar.svg"></img>
         <h4>Add Team Subscribers</h4>
       </div>
+
 
       <div className="DropDowns">
         <BoardMembersComponent
@@ -95,7 +95,7 @@ function App() {
         className="submit"
         onClick={() => openCalender(taskName, date, selectedTeamMembers)}
       >
-        Open Calender
+        Go To Calendar
       </div>
     </div>
   );
